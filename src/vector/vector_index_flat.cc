@@ -105,7 +105,7 @@ butil::Status VectorIndexFlat::AddOrUpsert(const std::vector<pb::common::VectorW
     DINGO_LOG(ERROR) << status.error_cstr();
     return status;
   }
-  const auto& vector_values = VectorIndexUtils::ExtractVectorValue(vector_with_ids, dimension_, normalize_);
+  const auto& vector_values = VectorIndexUtils::ExtractVectorValue<float>(vector_with_ids, dimension_, normalize_);
 
   BvarLatencyGuard bvar_guard(&g_flat_upsert_latency);
   RWLockWriteGuard guard(&rw_lock_);
@@ -179,7 +179,7 @@ butil::Status VectorIndexFlat::Search(const std::vector<pb::common::VectorWithId
   std::vector<faiss::idx_t> labels;
   labels.resize(topk * vector_with_ids.size(), -1);
 
-  const auto& vector_values = VectorIndexUtils::ExtractVectorValue(vector_with_ids, dimension_, normalize_);
+  const auto& vector_values = VectorIndexUtils::ExtractVectorValue<float>(vector_with_ids, dimension_, normalize_);
 
   {
     BvarLatencyGuard bvar_guard(&g_flat_search_latency);
@@ -216,7 +216,7 @@ butil::Status VectorIndexFlat::RangeSearch(const std::vector<pb::common::VectorW
     return status;
   }
 
-  const auto& vector_values = VectorIndexUtils::ExtractVectorValue(vector_with_ids, dimension_, normalize_);
+  const auto& vector_values = VectorIndexUtils::ExtractVectorValue<float>(vector_with_ids, dimension_, normalize_);
 
   std::unique_ptr<faiss::RangeSearchResult> range_search_result =
       std::make_unique<faiss::RangeSearchResult>(vector_with_ids.size());
